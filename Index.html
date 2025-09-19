@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Estrategias para $10,000 Mensuales</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #4f46e5;
+            --accent: #8b5cf6;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+    
+        .header-with-photo {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), 
+                        url('images/mi-foto.jpg') center/cover no-repeat;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+     
+
+
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .inputs, .results {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="number"], select, textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus, select:focus, textarea:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .slider-container {
+            margin-top: 8px;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .result-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .strategy {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .strategy-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .strategy-desc {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .strategy-requirements {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .req-pill {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: #eee;
+        }
+        
+        .high { background: #fee2e2; color: #b91c1c; }
+        .medium { background: #fef3c7; color: #b45309; }
+        .low { background: #dcfce7; color: #15803d; }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+        }
+        
+        .highlight {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .note {
+            background: #e0f2fe;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .brand-warning {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .brand-warning-title {
+            font-weight: 600;
+            color: #b45309;
+            margin-bottom: 8px;
+        }
+        
+        .strategy-type {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .type-1 { background: #dbeafe; color: #1e40af; }
+        .type-2 { background: #ede9fe; color: #5b21b6; }
+        .type-3 { background: #f3e8ff; color: #7e22ce; }
+        .type-4 { background: #fce7f3; color: #be185d; }
+        .type-5 { background: #ffedd5; color: #c2410c; }
+        .type-6 { background: #dcfce7; color: #166534; }
+        .type-7 { background: #fef3c7; color: #92400e; }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .subscription-warning {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .subscription-warning-title {
+            font-weight: 600;
+            color: #b91c1c;
+            margin-bottom: 8px;
+        }
+        
+        .prompt-section {
+            background: #f0f9ff;
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+        }
+        
+        .prompt-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .prompt-text {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .copy-btn {
+            background: var(--success);
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .copy-btn:hover {
+            background: #0da271;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .user-info-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header-with-photo">
+            <h1>Calculadora de Estrategias para $10,000 Mensuales</h1>
+            <p class="subtitle">Basado en los principios del minicurso: Encuentra el camino adecuado para alcanzar tu meta financiera</p>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="user-info">1 Mi información</div>
+            <div class="tab" data-tab="calculator">2 Calculadora</div>
+        </div>
+        
+        <div class="tab-content active" id="user-info-tab">
+            <div class="inputs">
+                <div class="form-group">
+                    <label for="userSituation">¿Cuál es tu situación actual?</label>
+                    <select id="userSituation">
+                        <option value="new">Estoy empezando desde cero (sin negocio actual)</option>
+                        <option value="existing">Ya tengo un negocio establecido</option>
+                        <option value="planning">Estoy planificando un nuevo negocio</option>
+                        <option value="side">Tengo un negocio secundario que quiero hacer crecer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userIndustry">¿En qué industria o sector te gustaría operar? (opcional)</label>
+                    <input type="text" id="userIndustry" placeholder="Ej: alimentos, tecnología, educación, belleza...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userRegion">¿En qué región o país te encuentras?</label>
+                    <input type="text" id="userRegion" placeholder="Ej: México, España, Bogotá-Colombia...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userCapital">¿Cuál es tu capital disponible para invertir? (aproximado)</label>
+                    <select id="userCapital">
+                        <option value="0">Menos de $500</option>
+                        <option value="1">$500 - $2,000</option>
+                        <option value="2">$2,000 - $10,000</option>
+                        <option value="3">$10,000 - $50,000</option>
+                        <option value="4">Más de $50,000</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userExperience">¿Cuál es tu nivel de experiencia en este sector?</label>
+                    <select id="userExperience">
+                        <option value="0">Principiante (poca o ninguna experiencia)</option>
+                        <option value="1">Algo de experiencia (he trabajado en el sector)</option>
+                        <option value="2">Experto (tengo años de experiencia en este campo)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userSkills">¿Qué habilidades relevantes tienes? (opcional)</label>
+                    <textarea id="userSkills" rows="3" placeholder="Ej: marketing digital, ventas, diseño web, producción de contenido..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userGoals">¿Algún objetivo específico o información adicional que quieras compartir? (opcional)</label>
+                    <textarea id="userGoals" rows="3" placeholder="Ej: Quiero trabajar desde casa, prefiero un negocio escalable..."></textarea>
+                </div>
+                
+                <button id="saveUserInfoBtn">Guardar Información</button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="calculator-tab">
+            <div class="calculator">
+                <div class="inputs">
+                    <div class="form-group">
+                        <label for="productType">Tipo de producto/servicio</label>
+                        <select id="productType">
+                            <option value="digital">Digital (sin límite de producción)</option>
+                            <option value="physical">Físico (capacidad de producción limitada)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="profitGroup">
+                        <label for="profitPerUnit">Ganancia neta por producto/servicio ($)</label>
+                        <input type="number" id="profitPerUnit" min="0.05" max="1000" step="0.01" value="10">
+                        <div class="error-message" id="profitError">El precio mínimo permitido es $0.05</div>
+                        <div class="slider-container">
+                            <input type="range" min="0.05" max="1000" step="0.01" value="10" class="slider" id="profitPerUnitSlider">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group hidden" id="productionGroup">
+                        <label for="productionCapacity">Capacidad máxima de producción mensual (unidades)</label>
+                        <input type="number" id="productionCapacity" min="1" max="100000" step="1" value="100">
+                        <div class="slider-container">
+                            <input type="range" min="1" max="100000" step="1" value="100" class="slider" id="productionCapacitySlider">
+                        </div>
+                    </div>
+                    
+                    <button id="calculateBtn">Calcular Estrategias</button>
+                    
+                    <div class="note">
+                        <p><strong>📝 Nota importante:</strong> Todas estas ganancias se calculan después de superar el punto de equilibrio, es decir, una vez cubiertos todos los costos fijos y variables.</p>
+                    </div>
+                    
+                    <div class="highlight">
+                        <p><strong>💡 Consejo del minicurso:</strong> Entre más dinero le pidas a cada cliente, más valor debes entregar y más importante es la marca personal. Productos premium requieren posicionarte como experto.</p>
+                    </div>
+                </div>
+                
+                <div class="results">
+                    <div class="result-card">
+                        <div class="result-title">Resumen de tu meta</div>
+                        <div id="goalSummary">Para ganar $10,000 con una ganancia de $10 por unidad, necesitas vender 1,000 unidades.</div>
+                    </div>
+                    
+                    <h3>Estrategias recomendadas:</h3>
+                    <div id="strategiesContainer">
+                        <!-- Las estrategias se generarán aquí con JavaScript -->
+                    </div>
+                    
+                    <div class="prompt-section">
+                        <div class="prompt-title">
+                            <span>Prompt para IA de Asistencia</span>
+                            <button class="copy-btn" id="copyPromptBtn">📋 Copiar Prompt</button>
+                        </div>
+                        <div class="prompt-text" id="promptText">
+                            // El prompt se generará automáticamente basado en tus datos
+                        </div>
+                        <p><strong>Instrucciones:</strong> Copia este texto y pégalo en ChatGPT, Claude, Gemini o cualquier IA conversacional para obtener recomendaciones personalizadas para tu situación específica.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM
+            const productTypeSelect = document.getElementById('productType');
+            const profitPerUnitInput = document.getElementById('profitPerUnit');
+            const profitPerUnitSlider = document.getElementById('profitPerUnitSlider');
+            const productionCapacityInput = document.getElementById('productionCapacity');
+            const productionCapacitySlider = document.getElementById('productionCapacitySlider');
+            const profitGroup = document.getElementById('profitGroup');
+            const productionGroup = document.getElementById('productionGroup');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const goalSummary = document.getElementById('goalSummary');
+            const strategiesContainer = document.getElementById('strategiesContainer');
+            const profitError = document.getElementById('profitError');
+            const promptText = document.getElementById('promptText');
+            const copyPromptBtn = document.getElementById('copyPromptBtn');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Elementos de información del usuario
+            const userSituation = document.getElementById('userSituation');
+            const userIndustry = document.getElementById('userIndustry');
+            const userRegion = document.getElementById('userRegion');
+            const userCapital = document.getElementById('userCapital');
+            const userExperience = document.getElementById('userExperience');
+            const userSkills = document.getElementById('userSkills');
+            const userGoals = document.getElementById('userGoals');
+            const saveUserInfoBtn = document.getElementById('saveUserInfoBtn');
+            
+            // Precio mínimo permitido
+            const MIN_PRICE = 0.05;
+            
+            // Sistema de pestañas
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Desactivar todas las pestañas
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // Activar la pestaña seleccionada
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Guardar información del usuario
+            saveUserInfoBtn.addEventListener('click', () => {
+                alert('Información guardada correctamente. Ahora puedes volver a la calculadora para obtener recomendaciones personalizadas.');
+                // Cambiar a la pestaña de calculadora
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                document.querySelector('[data-tab="calculator"]').classList.add('active');
+                document.getElementById('calculator-tab').classList.add('active');
+                
+                // Actualizar el prompt con la nueva información
+                generatePrompt();
+            });
+            
+            // Mostrar/ocultar campos según tipo de producto
+            productTypeSelect.addEventListener('change', function() {
+                if (this.value === 'physical') {
+                    productionGroup.classList.remove('hidden');
+                } else {
+                    productionGroup.classList.add('hidden');
+                }
+                updateGoalSummary();
+                generatePrompt();
+            });
+            
+            // Validar precio mínimo
+            function validatePrice(value) {
+                if (value < MIN_PRICE) {
+                    profitError.style.display = 'block';
+                    profitPerUnitInput.value = MIN_PRICE;
+                    profitPerUnitSlider.value = MIN_PRICE;
+                    return false;
+                } else {
+                    profitError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            // Sincronizar sliders con inputs
+            profitPerUnitInput.addEventListener('input', () => {
+                if (validatePrice(profitPerUnitInput.value)) {
+                    profitPerUnitSlider.value = profitPerUnitInput.value;
+                    updateGoalSummary();
+                    generatePrompt();
+                }
+            });
+            
+            profitPerUnitSlider.addEventListener('input', () => {
+                profitPerUnitInput.value = profitPerUnitSlider.value;
+                updateGoalSummary();
+                generatePrompt();
+            });
+            
+            productionCapacityInput.addEventListener('input', () => {
+                productionCapacitySlider.value = productionCapacityInput.value;
+                updateGoalSummary();
+                generatePrompt();
+            });
+            
+            productionCapacitySlider.addEventListener('input', () => {
+                productionCapacityInput.value = productionCapacitySlider.value;
+                updateGoalSummary();
+                generatePrompt();
+            });
+            
+            // Actualizar resumen de meta
+            function updateGoalSummary() {
+                const profit = Math.max(MIN_PRICE, parseFloat(profitPerUnitInput.value));
+                const goal = 10000;
+                const unitsNeeded = Math.ceil(goal / profit);
+                
+                if (productTypeSelect.value === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    goalSummary.textContent = `Para ganar $${goal.toLocaleString()} con una ganancia de $${profit.toFixed(2)} por unidad, necesitas vender ${unitsNeeded.toLocaleString()} unidades. Tu capacidad actual es de ${capacity.toLocaleString()} unidades.`;
+                } else {
+                    goalSummary.textContent = `Para ganar $${goal.toLocaleString()} con una ganancia de $${profit.toFixed(2)} por unidad, necesitas vender ${unitsNeeded.toLocaleString()} unidades.`;
+                }
+            }
+            
+            // Generar prompt para IA
+            function generatePrompt() {
+                const profit = Math.max(MIN_PRICE, parseFloat(profitPerUnitInput.value));
+                const goal = 10000;
+                const unitsNeeded = Math.ceil(goal / profit);
+                const productType = productTypeSelect.value;
+                const capacity = productType === 'physical' ? parseInt(productionCapacityInput.value) : 0;
+                
+                // Obtener información del usuario
+                const situationOptions = userSituation.options;
+                const situationText = situationOptions[userSituation.selectedIndex].text;
+                
+                const capitalOptions = userCapital.options;
+                const capitalText = capitalOptions[userCapital.selectedIndex].text;
+                
+                const experienceOptions = userExperience.options;
+                const experienceText = experienceOptions[userExperience.selectedIndex].text;
+                
+                const industry = userIndustry.value || 'No especificado';
+                const region = userRegion.value || 'No especificado';
+                const skills = userSkills.value || 'No especificadas';
+                const goals = userGoals.value || 'No especificados';
+                
+                const prompt = `Actúa como un consultor de negocios especializado en estrategias de precios, marketing y escalabilidad. Necesito generar ideas de productos o servicios y estrategias específicas basadas en los siguientes parámetros:
+
+- **Meta financiera:** $10,000 USD mensuales.
+- **Ganancia neta por unidad:** $${profit.toFixed(2)} USD.
+- **Unidades requeridas para la meta:** ${unitsNeeded.toLocaleString()} unidades.
+- **Tipo de producto:** ${productType === 'physical' ? 'Físico (capacidad limitada)' : 'Digital (sin límites de producción)'}.
+${productType === 'physical' ? `- **Capacidad de producción mensual:** ${capacity.toLocaleString()} unidades.\n` : ''}
+**Información sobre mi situación:**
+- **Situación actual:** ${situationText}
+- **Industria/sector de interés:** ${industry}
+- **Ubicación/región:** ${region}
+- **Capital disponible para invertir:** ${capitalText}
+- **Nivel de experiencia:** ${experienceText}
+- **Habilidades relevantes:** ${skills}
+- **Objetivos/adicional:** ${goals}
+
+Por favor, proporcióname:
+
+1. **Ejemplos concretos de productos o servicios** que typically tengan un margen de ganancia neta de ~$${profit.toFixed(2)} por unidad, considerando mi región (${region}) y sector de interés (${industry}).
+
+2. **Estrategias específicas** para alcanzar mi meta de ${unitsNeeded.toLocaleString()} unidades mensuales, considerando:
+   - Mi nivel de experiencia: ${experienceText}
+   - Mi capital disponible: ${capitalText}
+   - Mi ubicación: ${region}
+   ${productType === 'physical' && unitsNeeded > capacity ? '- Cómo superar mi limitación de capacidad actual\n' : ''}
+   - Estrategias de marketing adecuadas para mi nivel de habilidad (${skills})
+
+3. **Un análisis de viabilidad** para este modelo de negocio en mi contexto específico.
+
+4. **Recomendaciones personalizadas** basadas en toda la información proporcionada, con pasos accionables para comenzar.
+
+Por favor, estructura la respuesta de forma clara, con viñetas o numeración, y sé lo más específico posible con los ejemplos y números.`;
+                
+                promptText.textContent = prompt;
+            }
+            
+            // Copiar prompt al portapapeles
+            copyPromptBtn.addEventListener('click', () => {
+                const textArea = document.createElement('textarea');
+                textArea.value = promptText.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Efecto visual de copiado
+                const originalText = copyPromptBtn.textContent;
+                copyPromptBtn.textContent = '✓ Copiado!';
+                setTimeout(() => {
+                    copyPromptBtn.textContent = originalText;
+                }, 2000);
+            });
+            
+            // Calcular y mostrar estrategias
+            function calculateStrategies() {
+                const productType = productTypeSelect.value;
+                let profit = parseFloat(profitPerUnitInput.value);
+                
+                // Asegurar que el precio no sea menor al mínimo
+                if (profit < MIN_PRICE) {
+                    profit = MIN_PRICE;
+                    profitPerUnitInput.value = MIN_PRICE;
+                    profitPerUnitSlider.value = MIN_PRICE;
+                }
+                
+                const goal = 10000;
+                const unitsNeeded = Math.ceil(goal / profit);
+                
+                strategiesContainer.innerHTML = '';
+                
+                // Estrategia 1: Cálculo exacto
+                let strategy1HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-1">Estrategia 1</span>Cálculo exacto</div>
+                        <div class="result-value">Vender ${unitsNeeded.toLocaleString()} unidades a $${profit.toFixed(2)} cada una</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    if (unitsNeeded > capacity) {
+                        strategy1HTML += `
+                            <div class="strategy-desc">❌ Con tu capacidad actual de ${capacity.toLocaleString()} unidades, no puedes alcanzar tu meta. Necesitas aumentar tu capacidad de producción.</div>
+                        `;
+                        
+                        // Recomendación específica para productos físicos con baja capacidad
+                        if (profit < 1) {
+                            const branchesNeeded = Math.ceil(unitsNeeded / capacity);
+                            strategy1HTML += `
+                                <div class="strategy-desc">💡 <strong>Recomendación:</strong> Para productos de bajo precio, considera abrir ${branchesNeeded} sucursales para aumentar tu capacidad de producción y ventas.</div>
+                            `;
+                        }
+                    } else {
+                        strategy1HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual de ${capacity.toLocaleString()} unidades, puedes alcanzar tu meta. Enfócate en marketing y ventas.</div>
+                        `;
+                    }
+                } else {
+                    strategy1HTML += `
+                        <div class="strategy-desc">✅ Como producto digital, puedes escalar infinitamente. Enfócate en marketing y conversión.</div>
+                    `;
+                    
+                    // Advertencia para productos digitales con ganancia menor a $1
+                    if (profit < 1) {
+                        strategy1HTML += `
+                            <div class="subscription-warning">
+                                <div class="subscription-warning-title">⚠️ Advertencia para suscripciones de bajo costo</div>
+                                <div>Mantener ${unitsNeeded.toLocaleString()} clientes mensuales requiere una estructura de marketing muy sólida y estrategias de retención efectivas. Considera aumentar el valor de tu oferta.</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // Añadir consejos específicos según el precio
+                if (profit >= 50) {
+                    strategy1HTML += `
+                        <div class="brand-warning">
+                            <div class="brand-warning-title">⚠️ Estrategia de Marca Personal Requerida</div>
+                            <div>Con un precio de $${profit.toFixed(2)} por unidad, necesitas trabajar intensamente en tu marca personal y posicionarte como experto. Los clientes pagarán premium solo si perciben valor excepcional.</div>
+                        </div>
+                    `;
+                }
+                
+                strategy1HTML += `</div>`;
+                
+                // Estrategia 2: Subir el precio (menos clientes)
+                const higherPrice = Math.max(MIN_PRICE, Math.ceil(profit * 1.5));
+                const unitsNeededHigherPrice = Math.ceil(goal / higherPrice);
+                
+                let strategy2HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-2">Estrategia 2</span>Aumentar el valor (premium)</div>
+                        <div class="result-value">Vender ${unitsNeededHigherPrice.toLocaleString()} unidades a $${higherPrice.toFixed(2)} cada una</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    if (unitsNeededHigherPrice > capacity) {
+                        strategy2HTML += `
+                            <div class="strategy-desc">🔄 Con tu capacidad actual, aún necesitarías aumentar producción. Considera mejorar procesos o subcontratar.</div>
+                        `;
+                    } else {
+                        strategy2HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual, puedes alcanzar tu meta con menos unidades pero a mayor precio.</div>
+                        `;
+                    }
+                    strategy2HTML += `<div class="strategy-desc">💡 Consejo: Mejora tu producto para justificar el mayor precio y enfócate en clientes que valoren calidad sobre precio.</div>`;
+                } else {
+                    strategy2HTML += `
+                        <div class="strategy-desc">💡 Consejo: Crea una versión premium de tu producto digital con características exclusivas. Los productos digitales permiten fácil segmentación.</div>
+                    `;
+                }
+                
+                // Añadir consejos específicos según el precio
+                if (higherPrice >= 50) {
+                    strategy2HTML += `
+                        <div class="brand-warning">
+                            <div class="brand-warning-title">🎯 Enfoque en Marca Personal</div>
+                            <div>Con precios de $${higherPrice.toFixed(2)}, necesitas construir una marca personal sólida. Invierte en contenido de valor, testimonios y demostraciones de tu expertise.</div>
+                        </div>
+                    `;
+                }
+                
+                strategy2HTML += `</div>`;
+                
+                // Estrategia 3: Bajar el precio (más clientes)
+                const lowerPrice = Math.max(MIN_PRICE, Math.floor(profit * 0.75));
+                const unitsNeededLowerPrice = Math.ceil(goal / lowerPrice);
+                
+                let strategy3HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-3">Estrategia 3</span>Precio más accesible (masivo)</div>
+                        <div class="result-value">Vender ${unitsNeededLowerPrice.toLocaleString()} unidades a $${lowerPrice.toFixed(2)} cada una</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    if (unitsNeededLowerPrice > capacity) {
+                        strategy3HTML += `
+                            <div class="strategy-desc">❌ Con tu capacidad actual, necesitarías aumentar significativamente tu producción para esta estrategia.</div>
+                        `;
+                        
+                        // Recomendación específica para productos físicos con baja capacidad
+                        if (lowerPrice < 1) {
+                            const branchesNeeded = Math.ceil(unitsNeededLowerPrice / capacity);
+                            strategy3HTML += `
+                                <div class="strategy-desc">💡 <strong>Recomendación:</strong> Para productos de bajo precio, considera abrir ${branchesNeeded} sucursales para aumentar tu capacidad de producción y ventas.</div>
+                            `;
+                        }
+                    } else {
+                        strategy3HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual, puedes implementar esta estrategia.</div>
+                        `;
+                    }
+                    strategy3HTML += `<div class="strategy-desc">💡 Consejo: Optimiza tus procesos de producción para reducir costos y poder ofrecer precios más bajos sin afectar tu margen.</div>`;
+                } else {
+                    strategy3HTML += `
+                        <div class="strategy-desc">💡 Consejo: Los productos digitales son ideales para estrategias de precios bajos ya que los costos marginales son casi cero. Enfócate en volumen.</div>
+                    `;
+                    
+                    // Advertencia para productos digitales con ganancia menor a $1
+                    if (lowerPrice < 1) {
+                        strategy3HTML += `
+                            <div class="subscription-warning">
+                                <div class="subscription-warning-title">⚠️ Advertencia para suscripciones de bajo costo</div>
+                                <div>Mantener ${unitsNeededLowerPrice.toLocaleString()} clientes mensuales requiere una estructura de marketing muy sólida y estrategias de retención efectivas. Considera aumentar el valor de tu oferta.</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                strategy3HTML += `</div>`;
+                
+                // Estrategia 4: Múltiples productos
+                const additionalProducts = 3;
+                const unitsNeededMultiple = Math.ceil(goal / (profit * additionalProducts));
+                
+                let strategy4HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-4">Estrategia 4</span>Múltiples productos por cliente</div>
+                        <div class="result-value">Vender ${unitsNeededMultiple.toLocaleString()} paquetes de ${additionalProducts} productos a $${(profit * additionalProducts).toFixed(2)} cada paquete</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    const totalUnitsNeeded = unitsNeededMultiple * additionalProducts;
+                    if (totalUnitsNeeded > capacity) {
+                        strategy4HTML += `
+                            <div class="strategy-desc">🔄 Con tu capacidad actual, necesitarías aumentar tu producción para esta estrategia.</div>
+                        `;
+                    } else {
+                        strategy4HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual, puedes implementar esta estrategia.</div>
+                        `;
+                    }
+                    strategy4HTML += `<div class="strategy-desc">💡 Consejo: Crea combos o paquetes que ofrezcan mayor valor al cliente y aumenten tu ticket promedio.</div>`;
+                } else {
+                    strategy4HTML += `
+                        <div class="strategy-desc">💡 Consejo: Los productos digitales son ideales para bundling. Crea paquetes temáticos que resuelvan problemas específicos de tu audiencia.</div>
+                    `;
+                }
+                
+                strategy4HTML += `</div>`;
+                
+                // Estrategia 5: Suscripción
+                const subscriptionPrice = Math.max(MIN_PRICE, profit);
+                const subscribersNeeded = Math.ceil(goal / subscriptionPrice);
+                
+                let strategy5HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-5">Estrategia 5</span>Modelo de suscripción</div>
+                        <div class="result-value">Obtener ${subscribersNeeded.toLocaleString()} suscriptores pagando $${subscriptionPrice.toFixed(2)} mensuales</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    if (subscribersNeeded > capacity) {
+                        strategy5HTML += `
+                            <div class="strategy-desc">🔄 Con tu capacidad actual, necesitarías aumentar tu producción para esta estrategia.</div>
+                        `;
+                    } else {
+                        strategy5HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual, puedes implementar esta estrategia.</div>
+                        `;
+                    }
+                    strategy5HTML += `<div class="strategy-desc">💡 Consejo: Las suscripciones proporcionan ingresos recurrentes pero requieren una excelente experiencia para mantener a los clientes.</div>`;
+                } else {
+                    strategy5HTML += `
+                        <div class="strategy-desc">💡 Consejo: Las suscripciones digitales son altamente escalables. Enfócate en contenido constante y valor continuo para reducir la tasa de cancelación.</div>
+                    `;
+                    
+                    // Advertencia para suscripciones de bajo costo
+                    if (subscriptionPrice < 1) {
+                        strategy5HTML += `
+                            <div class="subscription-warning">
+                                <div class="subscription-warning-title">⚠️ Advertencia para suscripciones de bajo costo</div>
+                                <div>Mantener ${subscribersNeeded.toLocaleString()} suscriptores mensuales requiere una estructura de marketing muy sólida y estrategias de retención efectivas. Considera aumentar el valor de tu oferta.</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                strategy5HTML += `</div>`;
+                
+                // Estrategia 6: Venta al por mayor
+                const wholesalePrice = Math.max(MIN_PRICE, profit * 0.6);
+                const wholesaleUnitsNeeded = Math.ceil(goal / wholesalePrice);
+                
+                let strategy6HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-6">Estrategia 6</span>Venta al por mayor</div>
+                        <div class="result-value">Vender ${wholesaleUnitsNeeded.toLocaleString()} unidades a $${wholesalePrice.toFixed(2)} cada una (a distribuidores)</div>
+                `;
+                
+                if (productType === 'physical') {
+                    const capacity = parseInt(productionCapacityInput.value);
+                    if (wholesaleUnitsNeeded > capacity) {
+                        strategy6HTML += `
+                            <div class="strategy-desc">🔄 Con tu capacidad actual, necesitarías aumentar tu producción para esta estrategia.</div>
+                        `;
+                    } else {
+                        strategy6HTML += `
+                            <div class="strategy-desc">✅ Con tu capacidad actual, puedes implementar esta estrategia.</div>
+                        `;
+                    }
+                    strategy6HTML += `<div class="strategy-desc">💡 Consejo: El modelo mayorista reduce tus márgenes pero aumenta el volumen. Ideal si tienes capacidad de producción pero no de comercialización directa.</div>`;
+                } else {
+                    strategy6HTML += `
+                        <div class="strategy-desc">💡 Consejo: Para productos digitales, considera licenciar tu producto a otras empresas que puedan distribuirlo a cambio de un porcentaje de las ventas.</div>
+                    `;
+                }
+                
+                strategy6HTML += `</div>`;
+                
+                // Estrategia 7: E-commerce y dropshipping
+                const ecomPrice = Math.max(MIN_PRICE, profit);
+                const ecomUnitsNeeded = Math.ceil(goal / ecomPrice);
+                
+                let strategy7HTML = `
+                    <div class="strategy">
+                        <div class="strategy-title"><span class="strategy-type type-7">Estrategia 7</span>E-commerce y dropshipping</div>
+                        <div class="result-value">Vender ${ecomUnitsNeeded.toLocaleString()} unidades a $${ecomPrice.toFixed(2)} cada una (sin manejar inventario)</div>
+                `;
+                
+                if (productType === 'physical') {
+                    strategy7HTML += `
+                        <div class="strategy-desc">💡 Consejo: Con dropshipping, no tienes limitaciones de inventario pero tus márgenes son menores. Enfócate en marketing digital y encontrar proveedores confiables.</div>
+                    `;
+                } else {
+                    strategy7HTML += `
+                        <div class="strategy-desc">💡 Consejo: Para productos digitales, el e-commerce es ideal. Plataformas como Gumroad o Teachable te permiten vender sin preocuparte por logística.</div>
+                    `;
+                }
+                
+                strategy7HTML += `</div>`;
+                
+                // Añadir todas las estrategias al contenedor
+                strategiesContainer.innerHTML = strategy1HTML + strategy2HTML + strategy3HTML + strategy4HTML + strategy5HTML + strategy6HTML + strategy7HTML;
+                
+                // Generar el prompt para IA
+                generatePrompt();
+            }
+            
+            // Evento para el botón de calcular
+            calculateBtn.addEventListener('click', calculateStrategies);
+            
+            // Inicializar
+            updateGoalSummary();
+            generatePrompt();
+        });
+    </script>
+</body>
+</html>
